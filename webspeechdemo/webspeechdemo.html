@@ -81,7 +81,7 @@
   }
 </style>
 <h1 class="center" id="headline">
-  <a href="http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html">
+  <a href="https://wicg.github.io/speech-api/"> <!--http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html-->
     Web Speech API</a> Demonstration</h1>
 <div id="info">
   <p id="info_start">Click on the microphone icon and begin speaking.</p>
@@ -218,19 +218,20 @@ function updateCountry() {
 }
 
 var create_email = false;
-var final_transcript = '';
+var final_transcript = ''; //final transcript made as global variable
 var recognizing = false;
 var ignore_onend;
 var start_timestamp;
-if (!('webkitSpeechRecognition' in window)) {
-  upgrade();
+
+if (!('webkitSpeechRecognition' in window)) { //checks if webkitspeechreg object exists
+  upgrade(); //if it does not, check user to upgrade browser
 } else {
   start_button.style.display = 'inline-block';
   var recognition = new webkitSpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
+  recognition.continuous = true; //if false, speech recognition will stop when user stops talking
+  recognition.interimResults = true; //shows interim results, if false, results from are final
 
-  recognition.onstart = function() {
+  recognition.onstart = function() { //recognition.start() that is called by pressing mic button calls this onstart event ahndler
     recognizing = true;
     showInfo('info_speak_now');
     start_img.src = 'mic-animate.gif';
@@ -280,9 +281,9 @@ if (!('webkitSpeechRecognition' in window)) {
     }
   };
 
-  recognition.onresult = function(event) {
+  recognition.onresult = function(event) { // for each set of results, it calls this event handler
     var interim_transcript = '';
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
+    for (var i = event.resultIndex; i < event.results.length; ++i) { //appends any new final text
       if (event.results[i].isFinal) {
         final_transcript += event.results[i][0].transcript;
       } else {
@@ -290,7 +291,7 @@ if (!('webkitSpeechRecognition' in window)) {
       }
     }
     final_transcript = capitalize(final_transcript);
-    final_span.innerHTML = linebreak(final_transcript);
+    final_span.innerHTML = linebreak(final_transcript); //results might include \n, so linebreak converts these to HTML tags. Then sets string as innerHTML of span elements
     interim_span.innerHTML = linebreak(interim_transcript);
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
@@ -358,7 +359,7 @@ function startButton(event) {
   ignore_onend = false;
   final_span.innerHTML = '';
   interim_span.innerHTML = '';
-  start_img.src = 'mic-slash.gif';
+  start_img.src = 'mic-slash.gif'; //mic slash image shown (usually for short while). Noticable when Chrome asks user for permission to use mic
   showInfo('info_allow');
   showButtons('none');
   start_timestamp = event.timeStamp;
